@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true,
   // ここに共通設定（必要に応じて）
   // timeout: 5000
 });
