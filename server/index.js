@@ -17,7 +17,8 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "http://localhost:5174"
+    "http://localhost:5174",
+    "https://gridnote-demo-1.onrender.com"
   ],//ViteのURL
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
