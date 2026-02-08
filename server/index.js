@@ -15,14 +15,10 @@ import calendarRoutes from "./routes/calendar.js";
 const app = express();
 
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "https://gridnote-demo-1.onrender.com"
-  ],//ViteのURL
+  origin: true,
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
-  methods: ["GET",  "POST", "PUT", "DELETE", "OPTIONS"]
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 }));
 app.use(express.json());
 
