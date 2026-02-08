@@ -14,11 +14,11 @@ router.get("/", authMiddleware, async (req, res) => {
     try {
         const sql = `
             SELECT * FROM category 
-                WHERE user_id = ? 
+                WHERE user_id = $1
                 ORDER BY cate_id ASC
         `;
-        const [rows] = await pool.query(sql, [userId]);
-        res.json(rows);
+        const result = await pool.query(sql, [userId]);
+        res.json(result.rows);
 
     } catch(err) {
         console.error("カテゴリ取得エラー：", err);
@@ -40,10 +40,11 @@ router.post("/", authMiddleware, async(req, res) => {
             ,font_color
             ,sort_type
             )
-            VALUES (?, ?, ?, ?, 'created_desc')
+            VALUES ($1, $2, $3, $4, 'created_desc')
+            RETURNING cate_id
             `;
 
-            const [result] = await pool.query(sql,[
+            const result = await pool.query(sql,[
                 userId
                 ,cate_name
                 ,bg_color
@@ -52,7 +53,7 @@ router.post("/", authMiddleware, async(req, res) => {
 
             //追加したカテゴリを返す（フロント用）
             res.json({
-                cate_id: result.insertId
+                cate_id: result.rows[0].cate_id
                 ,cate_name
                 ,bg_color
                 ,font_color
@@ -72,8 +73,8 @@ router.put("/sort", authMiddleware, async (req, res) => {
     try {
         const sql = `
             UPDATE category
-            SET sort_type = ?
-            WHERE cate_id = ? AND user_id = ?
+            SET sort_type = $1
+            WHERE cate_id = $2 AND user_id = $3
         `;
 
         await pool.query(sql, [sort_type, cate_id, userId]);
@@ -96,10 +97,10 @@ router.put("/:cate_id", authMiddleware, async(req, res) => {
         const sql = `
             UPDATE category
             SET
-                cate_name = ?
-                ,bg_color = ?
-                ,font_color = ?
-            WHERE cate_id = ? AND user_id = ?
+                cate_name = $1
+                ,bg_color = $2
+                ,font_color = $3
+            WHERE cate_id = $4 AND user_id = $5
         `;
 
         const [result] = await pool.query(sql,[
@@ -110,7 +111,7 @@ router.put("/:cate_id", authMiddleware, async(req, res) => {
             ,userId
         ]);
 
-        res.json({ update: result.affectedRows });
+        res.json({ update: result.rowCount });
 
     }catch(err) {
         console.error("カテゴリ更新エラー:", err);
@@ -121,16 +122,17 @@ router.put("/:cate_id", authMiddleware, async(req, res) => {
 
 
 //削除処理　DELETE　/api/category/:id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
+    const userId = req.user_id;
     const { id } = req.params;
 
     try {
         const sql =`
             DELETE FROM category
-            WHERE cate_id = ?
+            WHERE cate_id = $1
+            AND user_id = $2
             `;
-            [id]
-        await pool.query(sql, [id]);
+        await pool.query(sql, [id, userId]);
 
         res.json({ message: "カテゴリ削除OK"});
     } catch(err) {

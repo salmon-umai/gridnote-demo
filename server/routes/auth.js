@@ -14,16 +14,16 @@ router.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        //ユーザー検査
-        const [rows] = await pool.query(
-            "SELECT * FROM `user` WHERE user_name = ?",
+        //ユーザー取得（PostgresQL）
+        const result = await pool.query(
+            "SELECT * FROM users WHERE user_name = $1",
             [username]
     );
-     if(rows.length === 0) {
+     if(result.rows.length === 0) {
         return res.status(401).json({ error: "ユーザーが存在しません"});
     }
 
-    const user = rows[0];
+    const user = result.rows[0];
 
     //パスワードの照合
     const ok = await bcrypt.compare(password, user.password_hash);

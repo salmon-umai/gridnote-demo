@@ -44,7 +44,7 @@ router.get("/", authMiddleware, async (req, res) => {
                 ,item.title
                 ,item.memo
                 ,item.priority
-                ,DATE_FORMAT(item.deadline,'%Y-%m-%d') AS deadline
+                ,TO_CHAR(item.deadline,'YYYY-MM-DD') AS deadline
                 ,item.url
                 ,item.price
                 ,item.is_done
@@ -53,16 +53,16 @@ router.get("/", authMiddleware, async (req, res) => {
                 ,item.updated_at
             FROM item
             JOIN category ON item.cate_id = category.cate_id
-            WHERE category.user_id = ?
-                AND item.cate_id = ?
+            WHERE category.user_id = $1
+                AND item.cate_id = $2
                 AND item.is_deleted = 0
             ORDER BY ${orderBy}
 `;
         //AND is_deleted = 0 削除済みデータが出てこなくなる
-        const[rows] = await pool.query(sql,[userId,cateId]);
+        const result = await pool.query(sql,[userId,cateId]);
         //userId,cateId：SQLの順番に合わせる
 
-        res.json(rows);
+        res.json(result.rows);
 
     } catch(err) {
         console.error("カテゴリ取得エラー：", err);
@@ -92,10 +92,11 @@ router.post("/", authMiddleware, async(req, res) => {
                 ,deadline
                 ,url
                 ,price)
-            VALUES ( ?, ?, ?, ?, ?, ?, ?)
+            VALUES ( $1, $2, $3, $4, $5, $6, $7)
+            RETURNING item_id
         `; 
 
-            const [result] = await pool.query(sql,[
+            const result = await pool.query(sql,[
                 cate_id
                 ,title
                 ,memo
@@ -105,7 +106,7 @@ router.post("/", authMiddleware, async(req, res) => {
                 ,price
             ]);
 
-            res.json({ item_id: result.insertId});
+            res.json({ item_id: result.rows[0].item_id });
     } catch(err) {
         console.error("項目追加エラー",err);
         res.status(500).json({ error:"項目追加に失敗"});
@@ -127,15 +128,17 @@ router.post("/delete",  authMiddleware, async(req, res) => {
     try {
         const sql = `
             UPDATE item
-            JOIN category ON item.cate_id = category.cate_id
-            SET item.is_deleted = 1
-            WHERE item.item_id IN (?) AND category.user_id = ?
+            SET is_deleted = 1
+            FROM category
+            WHERE item.cate_id = category.cate_id 
+            AND category.user_id = $1
+            AND item.item_id = ANY($2)
         `;
 
-        const [result] = await pool.query(sql, [item_ids, userId]);
+        const result = await pool.query(sql, [userId, item_ids]);
         console.log("MySQL result(結果):", result);
 
-        res.json({ deleted: result.affectedRows});
+        res.json({ deleted: result.rowCount});
         //result.affectedRows:SQL が影響を与えた行数
         // 〇件削除したとクライアントに伝える
     } catch(err) {
@@ -156,14 +159,16 @@ router.post("/undo", authMiddleware, async(req, res) => {
     try {
         const sql = `
             UPDATE item
-            JOIN category ON item.cate_id = category.cate_id
             SET item.is_deleted = 0
-            WHERE item.item_id IN (?) AND category.user_id = ?
+            FROM category
+            WHERE item.cate_id = category.cate_id
+            AND item.item_id = ANY($1)
+            AND category.user_id = $2
         `;
 
         const [result] = await pool.query(sql, [item_ids, userId]);
 
-        res.json({ restored: result.affectedRows});
+        res.json({ restored: result.rowCount});
         //restored:復元した件数 呼び方は自由
     } catch(err) {
         console.error("削除エラー",err);
@@ -180,10 +185,11 @@ router.put("/:item_id/done", authMiddleware, async (req, res) => {
     try {
         const sql = `
             UPDATE item
-            JOIN category ON item.cate_id = category.cate_id
-            SET item.is_done = ?
-            WHERE item.item_id = ?
-            AND category.user_id = ?
+            SET item.is_done = $1
+            FROM category
+            WHERE item.cate_id = category.cate_id
+            AND item.item_id = $2
+            AND category.user_id = $3
         `;
 
         const [result] = await pool.query(sql, [
@@ -192,7 +198,7 @@ router.put("/:item_id/done", authMiddleware, async (req, res) => {
             userId
         ]);
         
-        res.json({ updated: result.affectedRows });
+        res.json({ updated: result.rowCount });
     } catch (err) {
         console.error("完了済更新エラー", err);
         res.status(500).json({ error: "完了済更新に失敗 "});
@@ -219,16 +225,18 @@ router.put("/:item_id", authMiddleware, async(req, res) => {
     try {
         const sql = `
             UPDATE item
-            JOIN category ON item.cate_id = category.cate_id
             SET
-                item.title = ?
-                ,item.memo = ?
-                ,item.priority = ?
-                ,item.deadline = ?
-                ,item.url = ?
-                ,item.price = ?
+                item.title = $1
+                ,item.memo = $2
+                ,item.priority = $3
+                ,item.deadline = $4
+                ,item.url = $5
+                ,item.price = $6
                 ,item.updated_at = CURRENT_TIMESTAMP
-            WHERE item.item_id = ? AND category.user_id = ?
+            FROM category
+            WHERE item.cate_id = category.cate_id
+            AND item.item_id = $7
+            AND category.user_id = $8
         `;
 
         const [result] = await pool.query(sql,[
@@ -243,7 +251,7 @@ router.put("/:item_id", authMiddleware, async(req, res) => {
         ]);
 
         //何件更新されたかだけを返す
-        res.json({ updated: result.affectedRows });
+        res.json({ updated: result.rowCount });
     } catch(err) {
         console.error("項目更新エラー",err);
         res.status(500).json({ error:"項目更新に失敗"});

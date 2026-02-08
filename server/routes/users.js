@@ -5,7 +5,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import { pool } from "../db.js";
-import { authMiddleware } from "./auth.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -15,11 +15,11 @@ router.post("/register", async (req, res) => {
 
     try {
         //同じユーザー名が存在していないかを確認
-        const [exist] = await pool.query(
-            "SELECT * FROM `user` WHERE user_name = ? ",
+        const result = await pool.query(
+            "SELECT * FROM users WHERE user_name = $1 ",
             [username]
         );
-        if (exist.length > 0 ) {
+        if (result.rows.length > 0 ) {
             return res.status(400).json({ error: "そのユーザー名は既に使われています"});
         }
         
@@ -29,9 +29,10 @@ router.post("/register", async (req, res) => {
 
         //新規登録
         await pool.query(
-        `INSERT INTO \`user\` 
+        `INSERT INTO users 
         (user_name, password_hash, theme_id) 
-        VALUES (?, ?, ?)
+        VALUES ($1, $2, $3)
+        RETURNING user_id
         `,
         [username, hash, 1]
     );
@@ -49,15 +50,15 @@ router.get("/me", authMiddleware, async (req, res) => {
 
     try {
         //同じユーザー名が存在していないかを確認
-        const [rows] = await pool.query(
+        const result = await pool.query(
             `SELECT 
             user_id, user_name, theme_id 
-            FROM \`user\` WHERE user_id = ? 
+            FROM users WHERE user_id = $1 
             `,
             [userId]
         );
 
-        res.json(rows[0]);
+        res.json(result.rows[0]);
     } catch (err) {
         console.error("user me error", err);
         res.status(500).json({ error:"ユーザー情報取得失敗"});
@@ -76,9 +77,9 @@ router.put("/theme", authMiddleware, async (req, res) => {
 
     try {
         await pool.query(
-            `UPDATE \`user\`
-            SET theme_id = ?
-            WHERE user_id = ? 
+            `UPDATE users
+            SET theme_id = $1
+            WHERE user_id = $2
             `,
             [theme_id, userId]
         );
@@ -100,9 +101,9 @@ router.put("/username", authMiddleware, async (req, res) => {
     }
     try {
         await pool.query(
-            `UPDATE \`user\`
-            SET user_name = ?
-            WHERE user_id = ? 
+            `UPDATE users
+            SET user_name = $1
+            WHERE user_id = $2
             `,
             [user_name, userId]
         );
@@ -125,19 +126,19 @@ router.put("/password", authMiddleware, async (req, res) => {
 
     try {
         //現在のパスワードを取得
-        const[rows] = await pool.query(
+        const result = await pool.query(
             `SELECT password_hash 
-            FROM \`user\`
-            WHERE user_id = ? 
+            FROM users
+            WHERE user_id = $1 
             `,
             [userId]
         );
 
-        if(rows.length === 0) {
+        if(result.rows.length === 0) {
             return res.status(404).json({ error: "ユーザーが見つかりません。"});
         }
 
-        const user = rows[0];
+        const user = result.rows[0];
 
         //現在のパスワード照合
         const ok = await bcrypt.compare(current_password, user.password_hash);
@@ -149,9 +150,9 @@ router.put("/password", authMiddleware, async (req, res) => {
         const newHash = await bcrypt.hash(new_password, 10);
         //更新
         await pool.query(
-            `UPDATE \`user\`
-            SET password_hash = ?
-            WHERE user_id = ? 
+            `UPDATE users
+            SET password_hash = $1
+            WHERE user_id = $2
             `,
             [newHash, userId]
         );

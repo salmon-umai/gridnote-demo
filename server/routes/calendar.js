@@ -14,7 +14,7 @@ router.get("/", authMiddleware, async (req, res) => {
         const sql = `
             SELECT 
                 item.title,
-                DATE_FORMAT(item.deadline, '%Y-%m-%d') AS deadline,
+                TO_CHAR(item.deadline, 'YYYY-MM-DD') AS deadline,
                 item.cate_id,
                 category.bg_color,
                 category.font_color
@@ -22,7 +22,7 @@ router.get("/", authMiddleware, async (req, res) => {
             JOIN category
                 ON item.cate_id = category.cate_id
             WHERE
-                category.user_id = ?
+                category.user_id = $1
                 AND item.deadline IS NOT NULL
                 AND item.is_deleted = 0
             ORDER BY item.deadline ASC
@@ -30,8 +30,8 @@ router.get("/", authMiddleware, async (req, res) => {
         //category.user_id = ? ⇒ログインユーザーのカテゴリーに属する項目のみ取得
         //AND item.deadline IS NOT NULL ⇒日付が設定されている項目のみ取得
         //AND item.is_deleted = 0 ⇒削除されていないitemだけ取得
-        const [rows] = await pool.query(sql, [userId]);
-        res.json(rows);
+        const result = await pool.query(sql, [userId]);
+        res.json(result.rows);
 
     } catch(err) {
         console.error("カレンダーデータ取得エラー：", err);
