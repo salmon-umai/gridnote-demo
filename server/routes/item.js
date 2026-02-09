@@ -44,7 +44,7 @@ router.get("/", authMiddleware, async (req, res) => {
                 ,item.title
                 ,item.memo
                 ,item.priority
-                ,TO_CHAR(item.deadline,'YYYY-MM-DD') AS deadline
+                ,TO_CHAR(item.deadline::date,'YYYY-MM-DD') AS deadline
                 ,item.url
                 ,item.price
                 ,item.is_done
