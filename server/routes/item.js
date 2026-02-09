@@ -55,7 +55,7 @@ router.get("/", authMiddleware, async (req, res) => {
             JOIN category ON item.cate_id = category.cate_id
             WHERE category.user_id = $1
                 AND item.cate_id = $2
-                AND item.is_deleted = 0
+                AND item.is_deleted = false
             ORDER BY ${orderBy}
 `;
         //AND is_deleted = 0 削除済みデータが出てこなくなる
@@ -128,7 +128,7 @@ router.post("/delete",  authMiddleware, async(req, res) => {
     try {
         const sql = `
             UPDATE item
-            SET is_deleted = 1
+            SET is_deleted = true
             FROM category
             WHERE item.cate_id = category.cate_id 
             AND category.user_id = $1
@@ -159,7 +159,7 @@ router.post("/undo", authMiddleware, async(req, res) => {
     try {
         const sql = `
             UPDATE item
-            SET item.is_deleted = 0
+            SET item.is_deleted = false
             FROM category
             WHERE item.cate_id = category.cate_id
             AND item.item_id = ANY($1)
