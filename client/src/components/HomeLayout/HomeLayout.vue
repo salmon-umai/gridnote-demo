@@ -46,6 +46,8 @@
    const editingItem = ref(null);
    const openEditModal = ref(false);
 
+   const showDemoNotice = ref(false);
+
    //AddForm.vue用のfields
    const fieldsItem = [
       { label: "タイトル", key:"title", type: "text", model: newItemTiltle },
@@ -453,11 +455,11 @@ const updateDone = async (item) => {
    @close="openItemModal = false; resetItemFields()">
       <template #header>
          <h2>項目の追加</h2>
+         <span id="demo">※デモ環境のため、項目の追加は利用できません。</span>
       </template>
       <AddForm
        :fields="fieldsItem"
-       confirmLabel="追加" @submit="addItem">
-
+       confirmLabel="追加" @submit="addItem" :disabled="true">
       </AddForm>
    </CenterModal>
    
@@ -467,11 +469,13 @@ const updateDone = async (item) => {
       @close="openEditModal = false">
       <template #header>
          <h2>項目の編集</h2>
+         <span id="demo">※デモ環境のため、項目の編集は利用できません。</span>
       </template>
       <AddForm
          :fields="fieldsItem"
          confirmLabel="保存"
-         :initialValues="editingItem" @submit="submitEdit">
+         :initialValues="editingItem" @submit="submitEdit"
+         :disabled="true">
       </AddForm>
    </CenterModal>
 
@@ -496,17 +500,26 @@ const updateDone = async (item) => {
    </CenterModal>
 
    <!--項目ボタン-->
-   <button class="add-item-btn All-btn" @click="handleAddClick"
-   :disabled="editMode">
+   <div class="demo-area">
+   <button class="add-item-btn All-btn"
+     @click="handleAddClick">
       <AddBtn class="icon-small"></AddBtn>
    </button>
-   <button class="edit-item-btn All-btn" @click="enterEditMode">
+   <button class="edit-item-btn All-btn"
+   @click="enterEditMode">
       <EditBtn class="icon-small"></EditBtn>
    </button>
-   <button class="del-item-btn All-btn" @click="deleteCheckedItems">
+   <button class="del-item-btn All-btn"
+   @click.prevent="showDemoNotice = !showDemoNotice"
+   @mouseenter="showDemoNotice = true"
+   @mouseleave="showDemoNotice = false"
+   disabled>
       <DeleteBtn class="icon-small"></DeleteBtn>
    </button>
-
+   <div v-if="showDemoNotice" class="demo-comment">
+      <p>デモ環境のため編集・削除・追加はご利用いただけません。</p>
+   </div>
+   </div>
    <!--トースト通知-->
    <div
       v-if="showNoDeleteToast" class="toast warning-toast">
@@ -520,6 +533,43 @@ const updateDone = async (item) => {
 </template>
 
 <style scoped>
+/*デモ版*/
+.demo-area {
+   position: fixed;
+   right: 32px;
+   bottom: 32px;
+   display: flex;
+   gap: 14px;
+   z-index: 1000;
+}
+.demo-comment {
+   position: absolute;
+   bottom: 120%;
+   right: 0;
+   background: #edce06;
+   color: #334;
+   padding: 8px 12px;
+   font-size: 13px;
+   border-radius: 8px;
+   white-space: nowrap;
+   box-shadow: 0 4px 12px rgba(0,0,0,.15);
+   z-index: 10;
+}
+/*セリフのしっぽ */
+.demo-comment::after {
+   content: "";
+   position: absolute;
+   top: 100%;
+   right: 20px;
+   border-width: 6px;
+   border-style: solid;
+   border-color: #edce06 transparent transparent transparent;
+}
+#demo {
+    font-size: 13px;
+    color: #ff0000;
+    font-weight: 700;
+}
 .item-list {
    font-size: 15px;
 }
@@ -557,6 +607,7 @@ const updateDone = async (item) => {
    transition: transform 0.25s ease;
    display: inline-flex;
    z-index: 1;
+
 }
 .icon-small {
   width: 65px;
@@ -639,7 +690,7 @@ const updateDone = async (item) => {
    font-weight: bold;
    text-align: left;
    margin-bottom: 10px;
-  color: #333;
+   color: #333;
 }
 
 .item-card.edit-hover:hover {

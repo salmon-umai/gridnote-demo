@@ -21,6 +21,12 @@ const props = defineProps({
     initialValues: {
       type: Object,
       default: null
+    },
+
+    //デモ版用
+    disabled: {
+      type: Boolean,
+      default: false
     }
 });
 
@@ -44,6 +50,7 @@ watch(
 
 //送信処理：各field.modelから値を集めてemitする
 const handleSubmit = () => {
+  if(props.disabled) return; //デモ版
   const result = {};
   props.fields.forEach(field => {
     if(field.key) {
@@ -53,6 +60,7 @@ const handleSubmit = () => {
 
   emit("submit", result);
 }
+
 
 </script>
 
@@ -114,10 +122,11 @@ const handleSubmit = () => {
 
         </div>
 
-
         <!--決定ボタン-->
-        <button class="submit-btn" @click="handleSubmit">
-            {{ confirmLabel }}
+        <button type="button"
+        class="submit-btn" @click="handleSubmit"
+        :disabled="props.disabled">
+            {{ props.confirmLabel }}
         </button>
     </div>
 
@@ -125,6 +134,15 @@ const handleSubmit = () => {
 
 
 <style scoped>
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: #999;
+}
+.submit-btn:disabled:hover {
+  background: #999;
+}
+
 textarea {
   font-size: 15px;
   padding: 10px;

@@ -97,6 +97,7 @@ const logout = () => {
                 <p class="user-name" v-if="user">
                     ユーザー名： {{ user.user_name }}
                 </p>
+                <span id="demo">※デモ環境のため、<br>ユーザー名・パスワードの変更はできません。</span>
             </div>
             <div class="setting-btn">
                 <button id="username" class="btn" @click="openEditUserName">
@@ -120,8 +121,9 @@ const logout = () => {
             <label class="modal-title">新しいユーザー名：</label>
                 <input type="text" v-model="newUserName" class="new-name">
             <div class="modal-btn">
-                <button class="btn" @click="updateUserName">
-                    登録
+                <button class="btn" @click="updateUserName"
+                disabled>
+                    変更
                 </button>
                 <button class="btn" @click="isEditOpen = false">
                     キャンセル
@@ -252,4 +254,18 @@ input[type=password] {
     font-weight: 700;
 }
 
+/*デモ版*/
+.btn:disabled {
+    color: #555555;
+    background-color: #a7a7a7;
+    cursor: not-allowed
+}
+.btn:disabled:hover{
+    background-color: #a7a7a7;
+}
+#demo {
+    font-size: 12px;
+    color: #ff0000;
+    font-weight: 700;
+}
 </style>

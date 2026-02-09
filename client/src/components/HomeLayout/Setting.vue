@@ -110,8 +110,11 @@ const editCategoryFields = computed(() => {
     ];
 });
 
+const isDemo = true;
 //カテゴリの更新
 const updateCategory = async () => {
+    if(isDemo) return;//デモ版
+
   await api.put(`/api/category/${editingCategoryId.value}`, {
     cate_name: editingCategory.value.name,
     bg_color: editingCategory.value.bg,
@@ -216,6 +219,7 @@ const selectTheme = async (themeId) => {
         <div>
             <div class="cate-setting">
                 <h2>カテゴリの編集</h2>
+                                <span id="demo">※デモ環境のため、<br>カテゴリの編集・追加は利用できません。</span>
                 <ul class="category-list">
                     <li v-for="cat in categories" :key="cat.id" class="category-item"
                         :class="{ active: selectedCategoryId === cat.id }">
@@ -258,7 +262,8 @@ const selectTheme = async (themeId) => {
     </div>
 
     <CenterModal :show="isEditOpen" @close="isEditOpen = false">
-        <AddForm :fields="editCategoryFields" @submit="updateCategory" confirmLabel="変更">
+        <AddForm :fields="editCategoryFields" @submit="updateCategory" confirmLabel="変更"
+        :disabled="true">
         </AddForm>
     </CenterModal>
 
@@ -274,7 +279,7 @@ const selectTheme = async (themeId) => {
 
         <template #footer>
             <div  class="btn-center">
-                <button class="del-btn text-box" @click="confirmDelete">削除</button>
+                <button class="del-btn text-box demo-btn" disabled>削除</button>
                 <button class="del-btn text-box" @click="isDeleteOpen = false">キャンセル</button>
             </div>
         </template>
@@ -443,7 +448,7 @@ const selectTheme = async (themeId) => {
 }
 
 .theme-color.pink {
-    background: #ffc4d0;
+    background: #F8CCD1;
 }
 
 .theme-color.green {
@@ -468,5 +473,21 @@ const selectTheme = async (themeId) => {
 .theme-color.dark {
     background: #000;
 }
-
+/*デモ版 */
+#demo {
+    font-size: 12px;
+    color: #ff0000;
+    font-weight: 700;
+}
+h2 {
+    margin-bottom: 0px;
+}
+.demo-btn {
+    color: #555555;
+    background-color: #a7a7a7;
+    cursor: not-allowed;
+}
+.demo-btn:hover {
+    background-color: #a7a7a7;
+}
 </style>

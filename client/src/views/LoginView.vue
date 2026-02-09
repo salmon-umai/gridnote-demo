@@ -14,6 +14,8 @@ const username = ref("");
 const password = ref("");
 const errorMessage = ref("");
 
+const showDemoNotice = ref(false);
+
 //ログイン処理
 const login = async () => {
    errorMessage.value = ""//エラー消す
@@ -65,21 +67,22 @@ const login = async () => {
             </span>
 
                <button type="submit">ログイン</button>
-      <div class="demo">
-         <p id="demo-text">※本アプリはポートフォリオ用のデモ環境です。</p>
-         <div class="test-user">
-            <p>テスト環境用のアカウント</p>
-            <p>ユーザー名： test_user</p>
-            <p>パスワード： abc12345</p>
+         <div class="demo">
+            <p id="demo-text">※本アプリはポートフォリオ用のデモ環境です。</p>
+            <div class="test-user">
+               <p>テスト環境用のアカウント</p>
+               <p>ユーザー名： test_user</p>
+               <p>パスワード： abc12345</p>
+            </div>
          </div>
-      </div>
-      <div class="demo-list">
-         <ul>
-            <li>アカウント登録はご利用いただけません。</li>
-            <li>編集／削除など一部機能はご利用いただけません。</li>
-            <li>表示切替・並び替えなどの操作をお試しいただけます。</li>
-         </ul>
-      </div>
+         <div class="demo-list">
+            ※セキュリティおよびデータ保護の都合上、編集・削除・追加などの操作を制限しています。<br>
+            デモ環境では、表示切替・並び替えなどの操作をお試しいただけます。<br>
+         </div>
+         <div class="demo-list">
+            面接時には、ローカル環境を
+            画面共有または実機にて説明が可能です。
+         </div>
         </form>
             <div class="line-box">
             <div class="line"></div>または<div class="line"></div>
@@ -94,20 +97,22 @@ const login = async () => {
 /*デモ用 */
 .demo {
    text-align: center;
-   font-size: 13px;
+   font-size: 14px;
 }
+
 .test-user p {
    margin-top: 0;
    margin-bottom: 0;
+   font-size: 15px;
 }
+
 #demo-text {
    font-weight: 700;
 }
+
 .demo-list {
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   font-size: 12px;
+   margin: 10px auto 0 0;
+   font-size: 13px;
 }
 
  .form {
@@ -165,6 +170,9 @@ const login = async () => {
     font-size: 20px;
     text-align: center;
     margin-bottom: 30px;
+
+    text-decoration: line-through;
+    opacity: 0.8;
  }
 
  #error-message {

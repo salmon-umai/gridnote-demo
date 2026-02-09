@@ -91,7 +91,16 @@ const closeModal = () => {
                 <span v-show="errorMessage" id="error-message">
                     {{ errorMessage }}</span>
             </div>
-            <button type="submit">登録</button>
+            <div class="demo-area">
+                <button type="submit" disabled
+                    @mouseenter="showDemoNotice = true"
+                    @mouseleave="showDemoNotice = false"
+                >登録</button>
+                <div v-if="showDemoNotice" class="demo-comment">
+                    <p>デモ環境のため<br>
+                    アカウント登録はご利用いただけません。</p>
+                </div>
+            </div>
 
 
 
@@ -116,6 +125,47 @@ const closeModal = () => {
 </template>
 
 <style scoped>
+button:disabled {
+     color: #555555;
+    background-color: #a7a7a7;
+    cursor: not-allowed;
+}
+button:disabled:hover {
+    background-color: #a7a7a7;
+}
+
+.demo-area {
+   position: relative;
+   display: inline-block;
+   display: flex;
+   justify-content: center;
+}
+.demo-comment {
+   position: absolute;
+   bottom: 90%;
+   left: 70%;
+   transform: translateX(-50%);
+   background: #edce06;
+   color: #334;
+   padding: 8px 12px;
+   font-size: 13px;
+   border-radius: 8px;
+   white-space: nowrap;
+   box-shadow: 0 4px 12px rgba(0,0,0,.15);
+   z-index: 10;
+}
+/*セリフのしっぽ */
+.demo-comment::after {
+   content: "";
+   position: absolute;
+   top: 100%;
+   left: 30%;
+   transform: translateX(-50%);
+   border-width: 6px;
+   border-style: solid;
+   border-color: #edce06 transparent transparent transparent;
+}
+
  .form {
     padding: 40px 80px;
     text-align: left;

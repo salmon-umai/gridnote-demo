@@ -23,6 +23,8 @@ const newCategoryName = ref("");
 const newCategoryBg = ref("var(--theme-main)");
 const newCategoryFont = ref("var(--theme-font)");
 
+const showDemoNotice = ref(false);
+
 //選択中のカテゴリ
 const selecterdCate = ref(null);
 //HOMEに送るカテゴリIDを用意
@@ -136,15 +138,19 @@ const addCategory = async () => {
             </div>
 
             <!--カテゴリの追加-->
+            <div class="demo-area">
             <div class="add-category" @click="console.log('open!'); openCategory = true">
                 ＋ 新しいカテゴリ
+            </div>
             </div>
             <!--入力フォーム画面中央モーダル-->
             <CenterModal v-if="openCategory" @close="openCategory = false" :show="openCategory">
                 <template #header>
                     <h2>カテゴリの追加</h2>
+                    <span id="demo">※デモ環境のため、カテゴリの追加は利用できません。</span>
                 </template>
-                <AddForm :fields="fieldsCategory" confirmLabel="追加" @submit="addCategory">
+                <AddForm :fields="fieldsCategory" confirmLabel="追加" @submit="addCategory"
+                :disabled = true>
                 </AddForm>
             </CenterModal>
 
@@ -180,6 +186,44 @@ const addCategory = async () => {
 
 
 <style scoped>
+.demo-area {
+   position: relative;
+   display: inline-block;
+   display: flex;
+   justify-content: center;
+}
+.demo-comment {
+   position: absolute;
+   bottom: 90%;
+   left: 110%;
+   transform: translateX(-50%);
+   background: #edce06;
+   color: #334;
+   padding: 8px 12px;
+   font-size: 13px;
+   border-radius: 8px;
+   white-space: nowrap;
+   box-shadow: 0 4px 12px rgba(0,0,0,.15);
+   z-index: 10;
+}
+/*セリフのしっぽ */
+.demo-comment::after {
+   content: "";
+   position: absolute;
+   top: 100%;
+   left: 10%;
+   transform: translateX(-50%);
+   border-width: 6px;
+   border-style: solid;
+   border-color: #edce06 transparent transparent transparent;
+}
+#demo {
+    font-size: 13px;
+    color: #ff0000;
+    font-weight: 700;
+}
+/*デモ版　締 */
+
 html,
 body {
     height: 100%;
