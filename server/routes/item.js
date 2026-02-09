@@ -166,7 +166,7 @@ router.post("/undo", authMiddleware, async(req, res) => {
             AND category.user_id = $2
         `;
 
-        const [result] = await pool.query(sql, [item_ids, userId]);
+        const result = await pool.query(sql, [item_ids, userId]);
 
         res.json({ restored: result.rowCount});
         //restored:復元した件数 呼び方は自由
@@ -185,14 +185,14 @@ router.put("/:item_id/done", authMiddleware, async (req, res) => {
     try {
         const sql = `
             UPDATE item
-            SET item.is_done = $1
+            SET is_done = $1
             FROM category
             WHERE item.cate_id = category.cate_id
             AND item.item_id = $2
             AND category.user_id = $3
         `;
 
-        const [result] = await pool.query(sql, [
+        const result = await pool.query(sql, [
             is_done ? 1 : 0,
             itemId,
             userId
@@ -239,7 +239,7 @@ router.put("/:item_id", authMiddleware, async(req, res) => {
             AND category.user_id = $8
         `;
 
-        const [result] = await pool.query(sql,[
+        const result = await pool.query(sql,[
                 title
                 ,memo
                 ,priority

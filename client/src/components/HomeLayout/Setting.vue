@@ -443,7 +443,7 @@ const selectTheme = async (themeId) => {
 }
 
 .theme-color.pink {
-    background: #ffe8e8;
+    background: #ffc4d0;
 }
 
 .theme-color.green {

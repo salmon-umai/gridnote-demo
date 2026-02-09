@@ -127,7 +127,7 @@ const prevMonth = () => {
 }
 
 h1 {
-    color: var(--theme-main);
+    color: var(--theme-hover);
     font-size: 30px;
     border-bottom: 3px solid var(--theme-accent);
     margin-bottom: 0;
@@ -138,7 +138,7 @@ h2 {
 
 .month {
     display: flex;
-    color: var(--theme-main);
+    color: var(--theme-hover);
 }
 
 .calendar-btn {

@@ -10,8 +10,8 @@ export const themes = {
         icon: '#fff',
     },
     2: {//pink
-        main: '#ffe8e8',
-        accent: '#CDD4FF',
+        main: '#ffc4d0',
+        accent: '#81a4f0',
         sub: '#F7F7F7',
         hover: '#be4f6f',
         font: '#550c28',
