@@ -24,7 +24,7 @@ router.get("/", authMiddleware, async (req, res) => {
             WHERE
                 category.user_id = $1
                 AND item.deadline IS NOT NULL
-                AND item.is_deleted = 0
+                AND item.is_deleted = false
             ORDER BY item.deadline ASC
             `;
         //category.user_id = ? ⇒ログインユーザーのカテゴリーに属する項目のみ取得
