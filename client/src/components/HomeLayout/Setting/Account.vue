@@ -151,7 +151,8 @@ const logout = () => {
                 {{ passwordMessage }}
             </p>
             <div class="modal-btn">
-                <button class="btn" @click="updatePassword">
+                <button class="btn" @click="updatePassword"
+                disabled>
                     変更
                 </button>
                 <button class="btn sub" @click="isPasswordEditOpen = false">

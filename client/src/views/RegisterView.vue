@@ -17,6 +17,8 @@ const showModal = ref(false);
 const registerUser = ref("");//表示のために保管
 const registerPass = ref("");
 
+const showDemoNotice = ref(false);
+
 const register = async () => {
     errorMessage.value = "";
 

@@ -68,7 +68,8 @@ const login = async () => {
 
                <button type="submit">ログイン</button>
          <div class="demo">
-            <p id="demo-text">※本アプリはポートフォリオ用のデモ環境です。</p>
+                        <p class="demo-text">※本アプリはポートフォリオ用のデモ環境です。</p>
+            <p class="demo-text">※初回アクセス時はサーバー起動のため、ログインに時間がかかる場合があります。</p>
             <div class="test-user">
                <p>テスト環境用のアカウント</p>
                <p>ユーザー名： test_user</p>
@@ -106,7 +107,7 @@ const login = async () => {
    font-size: 15px;
 }
 
-#demo-text {
+.demo-text {
    font-weight: 700;
 }
 
@@ -170,9 +171,6 @@ const login = async () => {
     font-size: 20px;
     text-align: center;
     margin-bottom: 30px;
-
-    text-decoration: line-through;
-    opacity: 0.8;
  }
 
  #error-message {
