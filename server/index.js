@@ -33,13 +33,6 @@ app.use("/api/calendar", calendarRoutes);
 
 const PORT = process.env.PORT || 3000;
 
-// 簡単なAPIルート
-/*
-app.get('/api/hello', (req, res) => {
-  res.json({ message: 'Hello from server!' });
-});
-*/
-
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

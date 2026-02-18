@@ -135,29 +135,6 @@ const updateCategory = async () => {
   isEditOpen.value = false;
 };
 
-/*
-const updateCategory = async () => {
-    await api.put(`/api/category/${editingCategoryId.value}`, {
-        cate_name: editingCategory.value.name,
-        bg_color: editingCategory.value.bg,
-        font_color: editingCategory.value.color
-    });
-
-    //フロント側のカテゴリ一覧を更新
-    const tareget = categories.value.find(
-        C => C.id === editingCategoryId.value
-    );
-
-    if (tareget) {
-        tareget.name = editingCategory.value.name;
-        tareget.bg = editingCategory.value.bg;
-        tareget.color = editingCategory.value.color;
-    }
-
-    isEditOpen.value = false;
-};
-*/
-
 //削除処理
 const confirmDelete = async () => {
   await api.delete(`/api/category/${deleteTarget.value.id}`);
@@ -170,33 +147,7 @@ const confirmDelete = async () => {
 
   isDeleteOpen.value = false;
 };
-/*
 
-const confirmDelete = async () => {
-    try {
-        await api.delete(`/api/category/${deleteTarget.value.id}`);
-
-        //カテゴリ削除後に更新
-        const newCategories = categories.value.filter(
-            c => c.id !== deleteTarget.value.id
-        );
-
-        //Settingの一覧を即更新
-        categories.value = newCategories;
-
-        //Sidebar、Homeに反映
-        emit("update-categories", newCategories);
-
-        isDeleteOpen.value = false;
-        deleteTarget.value = null;
-    } catch (err) {
-        console.error("カテゴリ削除失敗", err);
-    }
-
-    isDeleteOpen.value = false;
-    deleteIcon.value = null;
-};
-*/
 
 const selectTheme = async (themeId) => {
     applyTheme(themes[themeId]);

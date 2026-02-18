@@ -14,5 +14,3 @@ export const pool = new Pool({
         rejectUnauthorized: false, //Renderに必須
     },
 });
-
-console.log("DB_NAME in db.js:", process.env.DB_NAME);

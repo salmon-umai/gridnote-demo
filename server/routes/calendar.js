@@ -4,8 +4,6 @@ import { authMiddleware } from "../middleware/authMiddleware.js"
 
 const router = express.Router();
 
-console.log("calendar.js 読み込まれた");
-
 //カレンダーに渡す
 router.get("/", authMiddleware, async (req, res) => {
     const userId = req.user_id;//JWＴから自動取得
