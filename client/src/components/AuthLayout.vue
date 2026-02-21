@@ -56,5 +56,7 @@ h2 {
     background: #fff;
     border: 2px solid var(--theme-accent);
     position: relative;
+    margin-top: 50px;
+    margin-bottom: 20px;
 }
 </style>
